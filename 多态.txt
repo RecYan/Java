@@ -1,0 +1,355 @@
+/*
+在多态中费静态成员函数的特点：（动态绑定 看对象）
+在编译时期：参阅引用型变量所属的类中是否有调用的方法。如果有，编译通过，如果没有编译失败。
+在运行时期：参阅对象所属的类中是否有调用的方法。
+简单总结就是：成员函数在多态调用时，编译看左边，运行看右边。
+
+
+在多态中，成员变量的特点：
+无论编译和运行，都参考左边(引用型变量所属的类)。
+
+
+在多态中，静态成员函数的特点：(静态绑定 看类)
+无论编译和运行，都参考做左边。
+
+
+*/
+
+abstract class 动物
+{
+	abstract void eat();
+}
+
+class Dog extends 动物
+{
+	public void eat()
+	{
+		//骨头;
+	}
+}
+
+class 猫 extends 动物
+{
+	public void eat()
+	{
+		//吃鱼；
+	}
+}
+
+class 猪 extends 动物
+{
+	public void eat()
+	{
+		//饲料；
+	}
+}
+
+class Demo
+{
+	public void method(动物 x)//new Dog(); new 猫();
+	{
+		x.eat();
+	}
+	/*
+	public void  method(猫 x)
+	{
+		x.eat();
+	}
+	public void  method(Dog x)
+	{
+		x.eat();
+	}
+	public void  method(猪 x)
+	{
+		x.eat();
+	}
+	*/
+}
+
+class Main
+{
+	public static void main(String[] args)
+	{
+		Demo d = new Demo();
+		d.method(new Dog());
+		d.method(new 猫());
+	}
+}
+
+
+
+动物 x = new 猫（）；
+//猫 x = new 猫（）；
+
+一。表现：
+父类或者接口的引用指向了或者接收了自己的子类对象。
+
+二。前提：
+1，类与类之间要有关系。继承，实现。
+2，通常都会有覆盖。
+
+三。好处：
+预先定义的程序可以运行后期程序的内容。
+增强了程序的扩展性。
+
+四。弊端：
+虽然可以预先使用，但是只能访问父类中已有的功能，运行的是后期子类的功能内容。
+不能预先使用子类中定义的特有功能。
+
+五。多态的注意事项：
+在代码中。
+对于成员函数：Fu f = new Zi(); f.method();
+编译时期：看左边。
+运行时期：看右边。
+因为成员函数有一个覆盖操作。
+	毕姥爷和毕老师的故事。
+
+	
+对于非私有的实例变量，
+静态变量，静态方法。
+
+编译和运行都看左边。
+
+老师要求记住结论。有空闲时间，就想想为什么？
+
+六。转型。
+子类对象被父类引用：子类对象在向上转型。
+将指向子类对象的父类应用转换成子类类型引用：向下转型。
+
+毕姥爷和毕老师的故事。
+class 毕姥爷
+{}
+
+class 毕老师 extends 毕姥爷
+{}
+
+毕姥爷 ly = new 毕老师();//毕老师向上转型为了毕姥爷。向上转型
+
+毕老师 ls = (毕老师)ly; //将代表毕老师对象的父类引用ly强制转换成了毕老师类型。向下转型。
+
+
+
+七。应用
+电脑使用。主板运行。
+
+class MainBoard
+{
+	public void run()
+	{
+		//主板运行;
+	}
+	public void usePCI(PCI p)//PCI p = new NetCard();
+	{
+		if(p!=null)
+		{
+			p.open();
+			p.close();
+		}
+	}
+}
+
+
+//为了提高主板功能的扩展性。
+//定义了规则。让后期的出现的功能板块，只要覆盖该规则，就可以被这个主板使用。
+interface PCI
+{
+	void open();
+	void close();
+}
+
+
+
+
+class MainDemo
+{
+	public static void main(String[] args)
+	{
+		MainBoard mb = new MainBoard();
+		mb.run();
+		mb.usePCI(null);
+		mb.usePCI(new NetCard());
+
+
+
+	}
+}
+
+
+class NetCard implements PCI
+{
+	public void open(){}
+	public void close(){}
+}
+
+
+Object:是java中所有对象的直接或者间接的父类。
+	它里面的方法都所有对象都具备的。
+	常见方法：
+	boolean equals(Object obj):用于比较两个对象是否相同。
+	String toString(): 获取对象的字符串表现形式 类名@哈希值  
+		getClass().getName()+"@"+Integer.toHexString(hashCode());
+	Class getClass():获取正在运行的对象所属的字节码文件的对象。也就是说如果Demo d = new Demo();
+				d.getClass():获取的就是d执行的对象所属的字节码文件Demo.class对象。
+	
+	通常在自定义对象时，因为对象中都有自己特有的描述，
+	所以都会建立对象自身的特有比较方法，或者字符串表现形式。
+	也就是说，会覆盖Object中的方法。
+
+
+/*
+Demo d1 = new Demo();
+Demo d2 = new Demo();
+d1.getClass() ==  d2.getClass();
+*/
+
+
+class Demo //extends Object
+{
+	public String toString()
+	{
+		this.getClass().getName()+"#"+Integer.toHexString(this.hashCode());
+	}
+}
+	
+
+class Fu
+{
+	void show(){System.out.println("fu show");}
+}
+class Zi extends Fu
+{
+	void function()
+	{
+		super.show();
+		//this.show();
+	}
+	void show(){System.out.println("zi show");}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+class Computer
+{
+	private MainBoard mb;
+
+	Computer()
+	{
+		mb = new MainBoard();
+	}
+	public void play()
+	{
+		mb.run();
+	}
+}
+*/
+
+
+
+
+/*
+多态：可以理解为事物存在的多种体现形态。
+
+人：男人，女人
+
+动物：猫，狗。
+
+猫 x = new 猫();
+
+动物 x = new 猫();
+
+1，多态的体现
+	父类的引用指向了自己的子类对象。
+	父类的引用也可以接收自己的子类对象。
+2，多态的前提
+	必须是类与类之间有关系。要么继承，要么实现。
+	通常还有一个前提：存在覆盖。
+
+3，多态的好处
+	多态的出现大大的提高程序的扩展性。
+
+4，多态的弊端：
+	提高了扩展性，但是只能使用父类的引用访问父类中的成员。
+
+5，多态的应用
+
+
+第二个问题：如何使用子类特有方法。
+
+
+*/
+abstract class Animal
+{
+	abstract void eat();
+}
+class Cat extends Animal
+{
+	public void eat()
+	{
+		System.out.println("eat fish......");
+	}
+	public void catchMouse()
+	{
+		System.out.println("catch mouse......");
+	}
+}
+class Dog extends Animal
+{
+	public void eat()
+	{
+		System.out.println("eat bone......");
+	}
+	public void catchMouse()
+	{
+		System.out.println("safe home......");
+	}
+}
+class DuoTaiTest
+{
+	public static void main(String[] args)
+	{
+		//Animal a = new Cat();//类型提升。 向上转型。
+		//a.eat();
+
+		//如果想要调用猫的特有方法时，如何操作？
+		//强制将父类的引用。转成子类类型。向下转型。
+		///Cat c = (Cat)a;
+		//c.catchMouse();
+		//千万不要出现这样的操作，就是将父类对象转成子类类型。
+		//我们能转换的是父类应用指向了自己的子类对象时，该应用可以被提升，也可以被强制转换。
+		//多态自始至终都是子类对象在做着变化。
+//		Animal a = new Animal();
+//		Cat c = (Cat)a;
+		
+		Animal a = new Cat();
+		a.eat();
+		animalAct(new Cat());
+		
+	}
+	// 多态体现
+	public static void animalAct(Animal a)
+	{
+		a.eat();
+		// 多态实现 一定要存在覆盖关系 不能调用父类中没有定义的方法
+		// a.catchMouse();
+		
+	}
+}

@@ -1,0 +1,233 @@
+转型是在继承的基础上而言的，继承是面向对象语言中，代码复用的一种机制，通过继承，子类可以复用父类的功能，如果父类不能满足当前子类的需求，则子类可以重写父类中的方法来加以扩展。
+
+向上转型：子类引用的对象转换为父类类型称为向上转型。通俗地说就是是将子类对象转为父类对象。此处父类对象可以是接口
+
+向下转型：父类引用的对象转换为子类类型称为向下转型。
+
+前者是一个向上转型，Animal dog 引用指向new Dog();子类对象当成父类对象，只能调用父类的成员，如果子类重写了父类的方法就根据这个引用指向调用子类重写的这个方法（这个方法就是覆盖override）。这个调用过程就称为“动态绑定”。
+
+转型需要注意的问题：
+
+向上转型时，父类指向子类引用对象会遗失除与父类对象共有的其他方法，也就是在转型过程中，子类的新有的方法都会遗失掉，在编译时，系统会提供找不到方法的错误。实例如下：
+
+public class Animal {
+
+         public void eat(){
+
+                   System.out.println("animal eatting...");
+
+         }
+
+}
+
+class Bird extends Animal{
+
+         public void eat(){
+
+                   System.out.println("bird eatting...");
+
+         }
+
+         public void fly(){
+
+                   System.out.println("bird flying...");
+
+         }
+
+}
+
+class Main{      
+
+         public static void main(String[] args) {
+
+                   Animal b=new Bird(); //向上转型
+
+                   b.eat();
+
+         b.fly();  //此处提示在Animal中没有定义fly方法。
+
+｝
+
+在向下转型过程中，分为两种情况：
+
+情况一：如果父类引用的对象如果引用的是指向的子类对象，那么在向下转型的过程中是安全的。也就是编译是不会出错误的。
+
+情况二：如果父类引用的对象是父类本身，那么在向下转型的过程中是不安全的，编译不会出错，但是运行时会出现java.lang.ClassCastException错误。它可以使用instanceof来避免出错此类错误。实例如下：
+
+public class Girl {
+
+         public void smile(){
+
+                   System.out.println("girl smile()...");
+
+         }
+
+}
+
+class MMGirl extends Girl{
+
+                   @Override
+
+         public void smile() {
+
+                                     System.out.println("MMirl smile sounds sweet...");
+
+         }
+
+         public void c(){
+
+                   System.out.println("MMirl c()...");
+
+         }
+
+}
+
+class main{
+
+                   public static void main(String[] args) {
+
+                   Girl g1=new MMGirl(); //向上转型
+
+                   g1.smile();
+
+                   MMGirl mmg=(MMGirl)g1;    //向下转型,编译和运行皆不会出错
+
+                   mmg.smile();
+
+                   mmg.c();
+
+                   Girl g2=new Girl();
+
+           //MMGirl mmg1=(MMGirl)g2; //不安全的向下转型,编译无错但会运行会出错
+
+           //mmg1.smile();
+
+           //mmg1.c();
+
+                   if(g2 instanceof MMGirl){
+
+                            MMGirl mmg1=(MMGirl)g2;
+
+                            mmg1.smile();
+
+                            mmg1.c();
+
+                   }
+
+         }
+
+总结：
+
+1、父类引用可以指向子类对象，子类引用不能指向父类对象。
+
+2、把子类对象直接赋给父类引用叫upcasting向上转型，向上转型不用强制转型。
+
+　　 如Father father = new Son();
+
+3、把指向子类对象的父类引用赋给子类引用叫向下转型（downcasting），要强制转型。
+
+　　 如father就是一个指向子类对象的父类引用，把father赋给子类引用son 即Son son =（Son）father；
+
+　　 其中father前面的（Son）必须添加，进行强制转换。
+
+4、upcasting 会丢失子类特有的方法,但是子类overriding 父类的方法，子类方法有效
+
+5、向上转型的作用，减少重复代码，父类为参数，调有时用子类作为参数，就是利用了向上转型。这样使代码变得简洁。体现了JAVA的抽象编程思想。
+*******************************************************************************************************************************************
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+*******************************************************************************************************************************************
+向下转型
+子类转型成父类是向上转型，反过来说，父类转型成子类就是向下转型。但是，向下转型可能会带来一些问题：我们可以说麻雀是鸟，但不能说鸟就是麻雀。来看下面的例子：
+A类：
+package a.b;
+
+public class A {
+
+void aMthod() {
+
+       System.out.println("A method");
+
+}
+
+}
+
+A的子类B：
+package a.b;
+
+public class B extends A {
+
+void bMethod1() {
+
+       System.out.println("B method 1");
+
+}
+
+void bMethod2() {
+
+       System.out.println("B method 2");
+
+}
+
+}
+
+C类：
+package a.b;
+
+public class C {
+
+     public static void main(String[] args) {
+
+            A a1 = new B(); // 向上转型
+
+            a1.aMthod();    // 调用父类aMthod()，a1遗失B类方法bMethod1()、bMethod2()
+
+            B b1 = (B) a1; // 向下转型，编译无错误，运行时无错误
+
+            b1.aMthod();    // 调用父类A方法
+
+            b1.bMethod1(); // 调用B类方法
+
+            b1.bMethod2(); // 调用B类方法
+
+            A a2 = new A();
+
+            B b2 = (B) a2; // 向下转型，编译无错误，运行时将出错
+
+            b2.aMthod();
+
+            b2.bMethod1();
+
+            b2.bMethod2();
+
+     }
+
+}
+
+从上面的代码我们可以得出这样一个结论：向下转型需要使用强制转换。运行C程序，控制台将输出：
+Exception in thread "main" java.lang.ClassCastException: a.b.A cannot be cast to a.b.B at
+                a.b.C.main(C.java:14)
+
+A method
+
+A method
+
+B method 1
+
+B method 2
+
+其实黑体部分的向下转型代码后的注释已经提示你将发生运行时错误。为什么前一句向下转型代码可以，而后一句代码却出错？这是因为a1指向一个子类B的对象，所以子类B的实例对象b1当然也可以指向a1。而a2是一个父类对象，子类对象b2不能指向父类对象a2。那么如何避免在执行向下转型时发生运行时ClassCastException异常？使用5.7.7节学过的instanceof就可以了。我们修改一下C类的代码：
+A a2 = new A();
+
+if (a2 instanceof B) {
+
+B b2 = (B) a2;
+
+b2.aMthod();
+
+b2.bMethod1();
+
+b2.bMethod2();
+
+}
+
+这样处理后，就不用担心类型转换时发生ClassCastException异常了。

@@ -1,0 +1,68 @@
+/*
+ * 初始化块
+ * 初始化变量方式：声明时、构造函数、代码块
+ * 使用static关键字修饰的代码块，称为静态代码块
+ * 
+ * 执行顺序：静态代码块>代码块>构造方法
+ * 
+ * 静态代码块在类加载时执行，且只会执行一次，主要用于初始化静态变量
+ * 代码块和构造方法在创建对象时执行
+ */
+
+public class Test01
+{
+    public static void main(String[] args)
+    {
+        Car car = new Car(60000);// 创建一个对象
+        car.show();// 调用对象的方法
+        System.out.println("-------华丽的分隔线-------\n");
+
+        Car car2=new Car(80000);
+        car2.show();
+    }
+}
+
+/*
+ * 汽车类
+ */
+class Car
+{
+    // 属性
+    String brand = "奇瑞";// 品牌，实例变量
+    double price;// 价格
+    String color;// 颜色
+    static int seat;// 座位数，静态变量
+
+    public Car()
+    {
+        System.out.println("无参的构造方法");
+    }
+
+    // 带参的构造方法，用来初始化成员
+    public Car(double price)
+    {
+        System.out.println("通过构造方法初始化变量price");
+        this.price = price;
+    }
+
+    // 代码块
+    {
+        System.out.println("通过代码块初始化变量color");
+        color = "red";
+    }
+
+    // 静态代码块
+    static
+    {
+        System.out.println("通过静态代码块初始化变量seat");
+        seat=5;
+    }
+
+    public void show()
+    {
+        System.out.println("品牌：" + brand);
+        System.out.println("价格：" + price);
+        System.out.println("颜色：" + color);
+        System.out.println("座位数："+seat);
+    }
+}

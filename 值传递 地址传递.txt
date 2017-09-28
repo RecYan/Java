@@ -1,0 +1,67 @@
+值传递：在方法进行调用时，形式参数是由实际参数来传递的，方法执行中形式参数值的改变不影响实际参数的值。
+
+引用传递：就是地址传递。在方法进行调用时，实际参数的引用的是地址，而不是真正参数的值，方法执行中形式参数值的改变将会影响实际参数的值。1
+
+
+代码实例
+
+public class Student
+{
+    public int age;
+}
+
+
+public class Tool
+{
+    public void swap(int a, int b)
+    {
+        int temp = a;
+        a = b;
+        b = temp;
+        System.out.println("值传递-方法内，交换后的值  " + "a = " + a + "  b = " + b);
+    }
+
+    public void swap(Student s1, Student s2)
+    {
+        int temp = s1.age;
+        s1.age = s2.age;
+        s2.age = temp;
+        System.out.println("引用传递-方法内，交换后的值  " + "s1 = " + s1.age + "  s2 = " + s2.age);
+    }
+
+    public void swap1(Student s1, Student s2)
+    {
+        Student ss = new Student();
+        ss = s1;
+        s1 = s2;
+        s2 = ss;
+        System.out.println("引用传递-方法内，交换后的值  " + "s1 = " + s1.age + "  s2 = " + s2.age);
+    }
+}
+
+
+
+public class Test
+{
+    public static void main(String[] args)
+    {
+        Tool tool = new Tool();
+
+        //1-值传递
+        int x = 10;
+        int y = 20;
+        tool.swap(x, y);//a = x; b = y;
+        System.out.println("main 交换后 " + "x = " + x + "  y = " + y);
+
+        //2-引用传递
+        Student s1 = new Student();
+        s1.age = 15;
+        Student s2 = new Student();
+        s2.age = 51;
+        tool.swap(s1, s2);//s1 = s1; s2 = s2;
+        System.out.println("main 交换后  " + "s1 = " + s1.age + "  s2 = " + s2.age);
+
+        tool.swap1(s1, s2);//s1 = s1; s2 = s2;
+
+    }
+}
