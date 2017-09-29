@@ -87,6 +87,7 @@ class Teacher
 		catch (breakDownException e)
 		{
 			// 机器故障老师 已不好处理 故需要抛出一个老师可以处理的异常 而不是将 breakDownException 这个异常抛出
+			// throw e;
 			throw new changeRoomException("换教室.......");
 		}
 		
