@@ -1,101 +1,134 @@
-/*ç”Ÿäº§è€… æ¶ˆè´¹è€… å¤šçº¿ç¨‹å®žçŽ°*/
-class Res
-{
+package com.JavaeeExcl.www;
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+
+//-----------------------------------------------------------------------
+/*
+JDK1.5 ÖÐÌá¹©ÁË¶àÏß³ÌÉý¼¶½â¾ö·½°¸¡£
+½«Í¬²½SynchronizedÌæ»»³ÉÏÖÊµLock²Ù×÷¡£
+½«ObjectÖÐµÄwait£¬notify notifyAll£¬Ìæ»»ÁËCondition¶ÔÏó¡£
+¸Ã¶ÔÏó¿ÉÒÔLockËø ½øÐÐ»ñÈ¡¡£
+	ÊµÏÖÁË±¾·½Ö»»½ÐÑ¶Ô·½²Ù×÷¡£
+
+Lock:Ìæ´úÁËSynchronized
+	lock 
+	unlock
+	newCondition()
+
+Condition£ºÌæ´úÁËObject wait notify notifyAll
+	await();
+	signal();
+	signalAll();
+*/
+//-----------------------------------------------------------------------------
+
+class res{
 	private String name;
-	private int count = 1;
-	private boolean falg = false;
+	private int count = 100000000;
+	private boolean flag = true;
 	
-	public synchronized void Set(String name)
-	{
-		if(flag)
-		{
-			try
-			{
-				this.wait();
+	// ¶àÏß³ÌÉý¼¶½â¾ö·½°¸¡£½«Í¬²½SynchronizedÌæ»»³ÉÏÖÊµLock²Ù×÷¡£
+			Lock lock = new ReentrantLock();
+			
+			//  Lock¶ÔÏóµÄÐÂÌØÐÔ--Ö§³Ö¶à¸öÏà¹ØµÄ Condition¶ÔÏó
+			Condition condition_con = lock.newCondition(); 
+			Condition condition_pro = lock.newCondition(); 
+	
+	public void setRes(String name){	
+
+		lock.lock();
+		try{
+			
+			//while()Ñ­»·--ÈÃ±»»½ÐÑµÄÏß³ÌÔÙÒ»´ÎÅÐ¶Ï±ê¼Ç¡£
+			while (!flag){
+
+					// ¶³½á±¾·½Ïß³Ì
+					condition_pro.await();
 			}
-			catch (Exception e)
-			{
-				
-			}
+			this.name = name;
+			System.out.println(Thread.currentThread().getName()+"...."+name+"...."+"........pro....."+count);
+			flag = false;
+			
+			//»½ÐÑ¶Ô·½Ïß³Ì¡£		
+			condition_con.signalAll();
+			
 		}
-		else
-		{
-			this.name = name+"......."+count++;
-			System.out.println(Thread.currentThread().getName()+"...producer.."+this.name);
-		}
-		flag = true;
-		this.notify();	
+		catch (Exception e){}
 		
+		// ±ØÐëÊÍ·Å×ÊÔ´--·ÀÖ¹Å×Òì³£µÄÏß³Ì²»ÊÍ·ÅËø
+		finally{
+			lock.unlock();
+		}
 	}
-	public synchronized void Out()
-	{
-		if(!flag)
-		{
-			try
-			{
-				this.wait();
+	public void outRes(){
+		lock.lock();
+		
+		try{
+			while (flag){
+				condition_con.await();
 			}
-			catch (Exception e)
-			{
-				
-			}
+			System.out.println(Thread.currentThread().getName()+"...."+name+"...."+".........con................."+count--);
+			flag = true;
+			condition_pro.signalAll();
 		}
-		else
-		{
-			System.out.println(Thread.currentThread().getName()+"...consumer.."+this.name);
+		catch (Exception e){}
+		finally{
+			lock.unlock();
 		}
-		flag = false;
-		this.notify();			
-	}		
+	}
 }
-class Producer implements Runnable
-{
-	private Res r;
+class producer implements Runnable{
+	private res r;
 	
-	Producer(Res r)
-	{
+	producer(res r){
 		this.r = r;
 	}
 	
-	public void run()
-	{
-		while(true)
-		{
-			r.Set("product");
+	public void run(){
+		while (true){
+			r.setRes("book");
 		}
-	
-	}	
+	}
 }
-class Consumer implements Runnable
-{
-	private Res r;
+class consumer implements Runnable{
+	private res r;
 	
-	Consumer(Res r)
-	{
+	consumer(res r){
 		this.r = r;
 	}
 	
-	public void run()
-	{
-		while(true)
-		{
-			r.Out();
+	public void run(){
+		while (true){
+			r.outRes();
 		}
-	}	
+	}
 }
-class ProducerConsumerDemo
-{
-	public static void main(String[] args)
-	{
-		Res r = new Res();
+public class ProducerConsumerDemo {
+
+	public static void main(String[] args) {
+		// TODO ×Ô¶¯Éú³ÉµÄ·½·¨´æ¸ù
 		
-		Producer pro = new Producer(r);
-		Consumer con = new Consumer(r);
+		res r = new res();
 		
-		Thread t1 = new Thread(pro);
-		Thread t2 = new Thread(con);
+		producer pro1 = new producer(r);
+		producer pro2 = new producer(r);
+		consumer con1 = new consumer(r);
+		consumer con2 = new consumer(r);
+		
+		
+		
+		Thread t1 = new Thread(pro1);
+		Thread t2 = new Thread(pro2);
+		Thread t3 = new Thread(con1);
+		Thread t4 = new Thread(con2);
 		
 		t1.start();
-		t2.start();		
+		t2.start();
+		t3.start();
+		t4.start();
 	}
+
 }
